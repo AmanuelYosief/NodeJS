@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Post Server</title>
+
+</head>
+<body>
+    <h1>Data Selfie App</h1>
+    <p>Hello!</p>
+    <p> latitude: <span id="latitude"></span>°<br />
+        longitude: <span id="longitude"></span>°</p>
+
+    <button id="submit">submit</button>
+
+    <label for="message">enter your message</label>
+    <input id="message" value="arugula" />
+    <script>
+            if ("geolocation" in navigator) {
+                console.log('geolocation is available');
+                navigator.geolocation.getCurrentPosition(async position => {
+                    console.log(position);
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    document.getElementById('latitude').textContent = lat.toFixed(2);
+                    document.getElementById('longitude').textContent = lon.toFixed(2);
+                    const POSTmessage = document.getElementById('message').value;
+
+                    const POSTdata = { lat, lon, POSTmessage };
+                    // Fetch on the specific address
+                    // To send a post, we have to add a JS, we need to add a second arguement. A JS Object
+                    // fetch('/api');
+                    // console.log(POSTdata);
+                    const button = document.getElementById('submit');
+                    button.addEventListener('click', async event =>{
+                        const options = {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        // All the possible options available : https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+                        // What we really want, is the body. This is where we package the data. 
+                        // We will stringify the data into a JSON string
+                        body: JSON.stringify(POSTdata), // useful to specify that we are sending JSON files, to be specified in the Header 
+                    }
+                    // fetch('/api', options).then(response =>{
+                    // console.log(response); // This comes in as a datastream, we can either
+                    // convert it into the type we want, destructure it or more. 
+                    // Much better to use async function instead of using .then, and be able to use await
+                    // Convert position function into an async function 
+                    //  })
+
+                    const response = await fetch('/api', options);
+                    const json = await response.json(); // converted data stream into JSON
+                    // java destructuring possible here
+                    console.log(json);
+                    })
+                });
+            } else {
+                console.log('geolocation is not available');
+            };
+    </script>
+</body>
+</html>

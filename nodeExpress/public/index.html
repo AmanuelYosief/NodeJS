@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Geotracking user and LeafyMap</title>
+
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+        crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+        integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+        crossorigin=""></script>
+
+    <style>
+        #mymap {
+            height: 180px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Data Selfie App</h1>
+    <p>Hello!</p>
+    <p> latitude: <span id="latitude"></span>°<br />
+        longitude: <span id="longitude"></span>°</p>
+        <button id="geolocate">geolocate</button>
+    <div><a href="/">hello</a> | <a href="goodbye.html">goodbye</a></div>
+
+    <div id="mymap"></div>
+
+    <script>
+
+        // Making a map and tiles
+        const mymap = L.map('mymap').setView([0, 0], 1);
+        const attribution =
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+        const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+        const tiles = L.tileLayer(tileUrl, { attribution });
+        tiles.addTo(mymap);
+
+        document.getElementById('geolocate').addEventListener('click', event => {
+        if ("geolocation" in navigator) {
+            console.log('geolocation is available');
+            navigator.geolocation.getCurrentPosition(position => {
+                console.log(position);
+                const lat = position.coords.latitude;
+                const long = position.coords.longitude;
+                document.getElementById('latitude').textContent = lat.toFixed(2);
+                document.getElementById('longitude').textContent = long.toFixed(2);
+
+               const marker = L.marker([lat, long]).addTo(mymap);
+               mymap.setView([lat, long], mymap.getZoom());
+               
+            });
+        } else {
+            console.log('geolocation is not available');
+        }});
+        
+
+        async function setCentre(){
+            
+        }
+        setInterval(setCentre, 1000);
+
+    </script>
+
+</body>
+
+</html>
