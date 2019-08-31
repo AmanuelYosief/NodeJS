@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 
+const Datastore = require('nedb');
+
 // Start listerning 
 app.listen(3000, () => console.log('listerning at 3000'));
 
@@ -14,6 +16,11 @@ app.use(express.json( {limit: '1mb'})); // https://expressjs.com/en/api.html to 
         // JSON Parsing so that when the Route receieves data, it is able to understand it as a JSON file, making it readable
         
 
+
+const database = new Datastore('database.db');
+database.loadDatabase(database.db);
+
+
 const allData = [];  
 
 //  Post method route
@@ -21,11 +28,11 @@ const allData = [];
 app.post('/api', (request, response) =>{
     //  console.log(request); // View the request message
     //  To view the request's body where the real data exist.
-
     console.log(request.body);
     const data = request.body;
-    allData.push(data);
     
+    allData.push(data); // This is persistant 
+    database.insert(data); // Saves to our new database 
     // Sending a response back
     // response.end();
         response.json({
@@ -36,7 +43,23 @@ app.post('/api', (request, response) =>{
             allData,
         });
     // To parse any data coming in as JSON. We need to use express.json([options])
-
-    
 });
+
+
+    //Get Method 
+    app.get('/api',(request,response) => {
+        // nedb database finding
+        database.find({}, (err,data) =>{
+            if (err){
+                response.end();
+                return;
+            }
+            response.json(data);    
+        });
+    });
+
+
+
 // npm install -g nodemon to automatic starting/restarting the server
+// npm install nedb --save  -Subset of MongoDB's API. Nedb automatically creates unique IDs
+// https://github.com/louischatriot/nedb 
